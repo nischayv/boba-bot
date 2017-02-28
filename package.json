@@ -1,0 +1,24 @@
+{
+  "name": "boba-bot",
+  "version": "1.0.0",
+  "description": "Just another bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nischayv/boba-bot.git"
+  },
+  "author": "Nischay Venkatram <nischay.v@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nischayv/boba-bot/issues"
+  },
+  "homepage": "https://github.com/nischayv/boba-bot#readme",
+  "dependencies": {
+    "@slack/client": "^3.8.1",
+    "cheerio": "^0.22.0",
+    "request": "^2.79.0"
+  }
+}
