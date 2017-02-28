@@ -18,6 +18,7 @@
   "homepage": "https://github.com/nischayv/boba-bot#readme",
   "dependencies": {
     "@slack/client": "^3.8.1",
+    "botkit": "^0.5.1",
     "cheerio": "^0.22.0",
     "request": "^2.79.0"
   }
