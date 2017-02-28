@@ -1,10 +1,15 @@
-const botkit = require('botkit')
-
-const app = express();
-const port = process.env.PORT || 3000;
+const Botkit = require('botkit')
+const os = require('os');
 
 const slackToken = process.env.SLACK_TOKEN;
+if(!slackToken) {
+  process.exit(1);
+}
 
+const controller = Botkit.slackbot({
+    debug: true,
+});
 
-
-exports = module.exports = app;
+const bot = controller.spawn({
+    token: slackToken
+}).startRTM();
