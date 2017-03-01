@@ -13,7 +13,11 @@ const controller = Botkit.slackbot({
 
 const bot = controller.spawn({
     token: slackToken
-}).startRTM();
+}).startRTM((err) => {
+    if (err) {
+        throw new Error('Could not connect to Slack');
+    }
+});
 
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
 
@@ -24,8 +28,8 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
                 callback: (response, convo) => {
                     convo.say('Bye!');
                     convo.next();
-                    setTimeout(function() {
-                        process.exit();
+                    setTimeout(() => {
+                        bot.closeRTM();
                     }, 3000);
                 }
             },
@@ -38,6 +42,14 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
                 }
             }
         ]);
+    });
+});
+
+controller.hears(['start'], 'direct_message,direct_mention', (bot, message) => {
+    bot.startRTM((err) => {
+        if (err) {
+            throw new Error('Could not connect to Slack');
+        }
     });
 });
 
