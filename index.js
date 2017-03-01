@@ -7,9 +7,13 @@ if(!slackToken) {
 }
 
 const controller = Botkit.slackbot({
-    debug: true,
+  debug: true,
 });
 
 const bot = controller.spawn({
-    token: slackToken
-}).startRTM();
+  token: slackToken
+});
+
+bot.startRTM((err, bot, payload) => {
+
+});
