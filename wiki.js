@@ -12,7 +12,7 @@ function ask(text, cb) {
         }
 
         const $ = cheerio.load(html);
-        const basic = $('#mw-content-text').first().text();
+        const basic = $('#mw-content-text').find('p').first().text();
 
         const response = `${basic} For more information go to ${mainUrl}`;
         return cb(null, response);
