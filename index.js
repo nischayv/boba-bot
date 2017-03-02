@@ -20,6 +20,17 @@ const bot = controller.spawn({
     }
 });
 
+controller.hears(['what', 'who'], 'direct_message,direct_mention', (bot, message) => {
+    const index = message.text.search('is') + 3;
+    const text = message.text.substring(index);
+    wiki.ask(text, (err, res) => {
+        if (err) {
+            return bot.reply(message, 'There has been an error');
+        }
+        bot.reply(message, res);
+    });
+});
+
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
 
     bot.startConversation(message, (err, convo) => {
@@ -68,17 +79,6 @@ controller.hears(['hello', 'hi', 'hey', 'yo'], 'direct_message,direct_mention', 
         }
     });
     bot.reply(message, 'Hello.');
-});
-
-controller.hears(['what.*', 'who.*'], 'direct_message,direct_mention', (bot, message) => {
-    const index = message.search('is') + 3;
-    const text = message.substring(index);
-    wiki.ask(text, (err, res) => {
-        if (err) {
-            return bot.reply(message, 'There has been an error');
-        }
-        bot.reply(message, res);
-    });
 });
 
 controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
