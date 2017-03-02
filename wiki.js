@@ -2,7 +2,7 @@ const request = require('request')
 
 const url = 'https://en.wikipedia.org/wiki/';
 
-module.exports = (text) => {
+function ask(text) {
     const modifiedText = text.replace(' ', '_');
 
     request(url, (err, response, html) => {
@@ -12,3 +12,5 @@ module.exports = (text) => {
         }
     });
 }
+
+module.exports.ask = ask;

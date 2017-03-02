@@ -1,6 +1,7 @@
 const Botkit = require('botkit')
 const os = require('os');
 const wiki = require('./wiki')
+const timeUtil = require('./utils/timeUtil');
 
 const slackToken = process.env.SLACK_TOKEN;
 if (!slackToken) {
@@ -57,7 +58,7 @@ controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your na
     'direct_message,direct_mention',
     (bot, message) => {
         var hostname = os.hostname();
-        var uptime = formatUptime(process.uptime());
+        var uptime = timeUtil.formatUptime(process.uptime());
 
         bot.reply(message,
             ':robot_face: I am a bot named <@' + bot.identity.name +
@@ -84,25 +85,7 @@ controller.hears(['hello', 'hi', 'hey', 'yo'], 'direct_message,direct_mention', 
     });
 });
 
-controller.hears([''], 'direct_message,direct_mention', (bot, message) => {
-    const response = wiki(message);
+controller.hears(['what.*', 'who.*'], 'direct_message,direct_mention', (bot, message) => {
+    const response = wiki.ask(text);
     bot.reply(response);
 });
-
-function formatUptime(uptime) {
-    var unit = 'second';
-    if (uptime > 60) {
-        uptime = uptime / 60;
-        unit = 'minute';
-    }
-    if (uptime > 60) {
-        uptime = uptime / 60;
-        unit = 'hour';
-    }
-    if (uptime != 1) {
-        unit = unit + 's';
-    }
-
-    uptime = uptime + ' ' + unit;
-    return uptime;
-}
