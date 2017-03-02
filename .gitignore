@@ -38,3 +38,6 @@ jspm_packages
 
 # JetBrains
 .idea
+
+# Atom Tern
+.tern-project
