@@ -46,14 +46,6 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
     });
 });
 
-controller.hears(['start'], 'direct_message,direct_mention', (bot, message) => {
-    bot.startRTM((err) => {
-        if (err) {
-            throw new Error('Could not connect to Slack');
-        }
-    });
-});
-
 controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
     'direct_message,direct_mention',
     (bot, message) => {
@@ -75,17 +67,20 @@ controller.hears(['hello', 'hi', 'hey', 'yo'], 'direct_message,direct_mention', 
             bot.botkit.log('Failed to add emoji reaction :(', err);
         }
     });
-
-    controller.storage.users.get(message.user, (err, user) => {
-        if (user && user.name) {
-            bot.reply(message, 'Hello ' + user.name + '!!');
-        } else {
-            bot.reply(message, 'Hello.');
-        }
-    });
+    bot.reply(message, 'Hello.');
 });
 
 controller.hears(['what.*', 'who.*'], 'direct_message,direct_mention', (bot, message) => {
-    const response = wiki.ask(text);
-    bot.reply(response);
+    const index = message.search('is') + 3;
+    const text = message.substring(index);
+    wiki.ask(text, (err, res) => {
+        if (err) {
+            return bot.reply(message, 'There has been an error');
+        }
+        bot.reply(message, res);
+    });
+});
+
+controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
+    bot.reply(message, 'Sorry, I did not understand what you just said :(');
 });
