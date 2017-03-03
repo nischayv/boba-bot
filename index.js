@@ -38,11 +38,25 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
         convo.ask('Are you sure you want me to shutdown?', [{
                 pattern: bot.utterances.yes,
                 callback: (response, convo) => {
-                    convo.say('Bye!');
-                    convo.next();
-                    setTimeout(() => {
-                        bot.closeRTM();
-                    }, 3000);
+                    convo.ask(`What's the passcode??`, [{
+                            pattern: 'Davy Jones',
+                            callback: (response, convo) => {
+                                convo.say('Roger Roger!');
+                                convo.next();
+                                setTimeout(() => {
+                                    bot.closeRTM();
+                                }, 3000);
+                            }
+                        },
+                        {
+                            pattern: '.*',
+                            default: true,
+                            callback: (response, convo) => {
+                                convo.say('Wrong passcode, Jedi scum');
+                                convo.next();
+                            }
+                        }
+                    ]);
                 }
             },
             {
@@ -57,11 +71,11 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
     });
 });
 
-controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
+controller.hears(['uptime', 'identify yourself'],
     'direct_message,direct_mention',
     (bot, message) => {
-        var hostname = os.hostname();
-        var uptime = timeUtil.formatUptime(process.uptime());
+        const hostname = os.hostname();
+        const uptime = timeUtil.formatUptime(process.uptime());
 
         bot.reply(message,
             ':robot_face: I am a bot named <@' + bot.identity.name +
