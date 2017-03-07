@@ -1,12 +1,16 @@
 const Botkit = require('botkit')
-const os = require('os');
+const os = require('os')
+const apiai = require('apiai')
 const wiki = require('./wiki')
-const timeUtil = require('./utils/timeUtil');
+const timeUtil = require('./utils/timeUtil')
 
 const slackToken = process.env.SLACK_TOKEN;
-if (!slackToken) {
+const apiaiToken = process.env.APIAI_TOKEN;
+if (!slackToken || !apiaiToken) {
     process.exit(1);
 }
+
+const aiRequest = apiai(apiaiToken);
 
 const controller = Botkit.slackbot({
     debug: true
