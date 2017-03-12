@@ -1,4 +1,5 @@
 const Botkit = require('botkit')
+const HerokuKeepalive = require('@ponko2/botkit-heroku-keepalive').default;
 const os = require('os')
 const apiai = require('apiai')
 const wiki = require('./wiki')
@@ -11,6 +12,10 @@ if (!slackToken || !apiaiToken) {
 }
 
 const ai = apiai(apiaiToken);
+const herokuKeepalive;
+controller.setupWebserver(process.env.PORT || 8080, function(err, webserver) {
+    herokuKeepalive = new HerokuKeepalive(controller);
+});
 
 const controller = Botkit.slackbot({
     debug: true
@@ -22,7 +27,9 @@ const bot = controller.spawn({
     if (err) {
         throw new Error('Could not connect to Slack');
     }
+    herokuKeepalive.start();
 });
+
 
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
 
