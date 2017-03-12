@@ -10,7 +10,7 @@ if (!slackToken || !apiaiToken) {
     process.exit(1);
 }
 
-const aiRequest = apiai(apiaiToken);
+const ai = apiai(apiaiToken);
 
 const controller = Botkit.slackbot({
     debug: true
@@ -22,17 +22,6 @@ const bot = controller.spawn({
     if (err) {
         throw new Error('Could not connect to Slack');
     }
-});
-
-controller.hears(['what', 'who'], 'direct_message,direct_mention', (bot, message) => {
-    const index = message.text.search('is') + 3;
-    const text = message.text.substring(index);
-    wiki.ask(text, (err, res) => {
-        if (err) {
-            return bot.reply(message, 'There has been an error');
-        }
-        bot.reply(message, res);
-    });
 });
 
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
@@ -86,19 +75,29 @@ controller.hears(['uptime', 'identify yourself'],
             '>. I have been running for ' + uptime + ' on ' + hostname + '.');
     });
 
-controller.hears(['hello', 'hi', 'hey', 'yo'], 'direct_message,direct_mention', (bot, message) => {
-    bot.api.reactions.add({
-        timestamp: message.ts,
-        channel: message.channel,
-        name: 'robot_face',
-    }, (err, res) => {
-        if (err) {
-            bot.botkit.log('Failed to add emoji reaction :(', err);
+controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
+    const request = ai.textRequest(message.text, {
+        sessionId: 'e1c8a397-4d65-4e87-977f-00f1f505169e'
+    });
+
+    request.on('response', (response) => {
+        bot.botkit.log(JSON.stringify(response));
+        const { result: { action, fulfillment, parameters } } = response;
+        if (action === 'wiki') {
+            wiki.ask(parameters.any, (err, res) => {
+                if (err) {
+                    return bot.reply(message, `I'm really sorry, I couldn't find a good answer!`);
+                }
+                bot.reply(message, res);
+            })
+        } else {
+            bot.reply(message, fulfillment.speech);
         }
     });
-    bot.reply(message, 'Hello.');
-});
 
-controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
-    bot.reply(message, 'Sorry, I did not understand what you just said :(');
+    request.on('error', (error) => {
+        bot.botkit.log(error);
+    });
+
+    request.end();
 });

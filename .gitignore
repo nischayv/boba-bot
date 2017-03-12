@@ -41,3 +41,6 @@ jspm_packages
 
 # Atom Tern
 .tern-project
+
+# Atom JS Beautify
+.jsbeautifyrc
