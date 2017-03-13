@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/nischayv/boba-bot#readme",
   "dependencies": {
-    "@ponko2/botkit-heroku-keepalive": "^0.9.0",
     "@slack/client": "^3.8.1",
     "apiai": "^4.0.1",
     "botkit": "^0.5.1",
