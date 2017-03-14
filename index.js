@@ -25,7 +25,7 @@ const bot = controller.spawn({
 });
 
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
-
+    bot.startTyping();
     bot.startConversation(message, (err, convo) => {
 
         convo.ask('Are you sure you want me to shutdown?', [{
@@ -50,6 +50,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
                             }
                         }
                     ]);
+                    convo.next();
                 }
             },
             {
@@ -67,6 +68,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
 controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.*'],
     'direct_message,direct_mention',
     (bot, message) => {
+        bot.startTyping();
         const hostname = os.hostname();
         const uptime = timeUtil.formatUptime(process.uptime());
 
@@ -76,6 +78,7 @@ controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.
     });
 
 controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
+    bot.startTyping();
     const request = ai.textRequest(message.text, {
         sessionId: 'e1c8a397-4d65-4e87-977f-00f1f505169e'
     });
