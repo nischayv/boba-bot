@@ -63,7 +63,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
     });
 });
 
-controller.hears(['uptime', 'identify yourself'],
+controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.*'],
     'direct_message,direct_mention',
     (bot, message) => {
         const hostname = os.hostname();
