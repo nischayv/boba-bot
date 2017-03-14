@@ -12,7 +12,8 @@ if (!slackToken || !apiaiToken) {
 const ai = apiai(apiaiToken);
 
 const controller = Botkit.slackbot({
-    debug: true
+    debug: true,
+    stats_optout: true
 });
 
 const bot = controller.spawn({
