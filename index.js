@@ -27,13 +27,13 @@ const bot = controller.spawn({
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
     bot.startConversation(message, (err, convo) => {
 
-        convo.ask('Are you sure you want me to shutdown?', [{
+        convo.askWithTyping('Are you sure you want me to shutdown?', [{
                 pattern: bot.utterances.yes,
                 callback: (response, convo) => {
-                    convo.ask(`What's the passcode??`, [{
+                    convo.askWithTyping(`What's the passcode??`, [{
                             pattern: 'Davy Jones',
                             callback: (response, convo) => {
-                                convo.say('Roger Roger!');
+                                convo.sayWithTyping('Roger Roger!');
                                 convo.next();
                                 setTimeout(() => {
                                     bot.closeRTM();
@@ -44,7 +44,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
                             pattern: '.*',
                             default: true,
                             callback: (response, convo) => {
-                                convo.say('Wrong passcode, Jedi scum');
+                                convo.sayWithTyping('Wrong passcode, Jedi scum');
                                 convo.next();
                             }
                         }
@@ -67,6 +67,9 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
 controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.*'],
     'direct_message,direct_mention',
     (bot, message) => {
+        bot.reply(message, {
+            type: 'typing'
+        })
         const hostname = os.hostname();
         const uptime = timeUtil.formatUptime(process.uptime());
 
@@ -76,6 +79,9 @@ controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.
     });
 
 controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
+    bot.reply(message, {
+        type: 'typing'
+    })
     const request = ai.textRequest(message.text, {
         sessionId: 'e1c8a397-4d65-4e87-977f-00f1f505169e'
     });
@@ -91,7 +97,7 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
                 bot.reply(message, res);
             })
         } else {
-            bot.replyWithTyping(message, fulfillment.speech);
+            bot.reply(message, fulfillment.speech);
         }
     });
 
