@@ -31,13 +31,13 @@ const bot = controller.spawn({
 controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) => {
   bot.startConversation(message, (err, convo) => {
 
-    convo.askWithTyping('Are you sure you want me to shutdown?', [{
+    convo.ask('Are you sure you want me to shutdown?', [{
         pattern: bot.utterances.yes,
         callback: (response, convo) => {
-          convo.askWithTyping(`What's the passcode??`, [{
-              pattern: 'Davy Jones',
+          convo.ask(`What's the passcode??`, [{
+              pattern: process.env.MASTERCODE,
               callback: (response, convo) => {
-                convo.sayWithTyping('Roger Roger!');
+                convo.say('Roger Roger!');
                 convo.next();
                 setTimeout(() => {
                   bot.closeRTM();
@@ -48,7 +48,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
               pattern: '.*',
               default: true,
               callback: (response, convo) => {
-                convo.sayWithTyping('Wrong passcode, Jedi scum');
+                convo.say('Wrong passcode, Jedi scum');
                 convo.next();
               }
             }
