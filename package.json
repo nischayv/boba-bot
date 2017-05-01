@@ -22,6 +22,7 @@
     "apiai": "^4.0.1",
     "botkit": "^0.5.1",
     "cheerio": "^0.22.0",
+    "cleverbot-node": "^0.3.10",
     "request": "^2.79.0"
   }
 }
