@@ -83,9 +83,6 @@ controller.hears(['uptime'],
   });
 
 controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
-  bot.reply(message, {
-    type: 'typing'
-  })
   const request = ai.textRequest(message.text, {
     sessionId: 'e1c8a397-4d65-4e87-977f-00f1f505169e'
   });
