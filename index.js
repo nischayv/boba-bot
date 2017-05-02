@@ -68,7 +68,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
   });
 });
 
-controller.hears(['uptime', 'identify yourself', 'who are you.*', 'what are you.*'],
+controller.hears(['uptime'],
   'direct_message,direct_mention',
   (bot, message) => {
     bot.reply(message, {
@@ -103,6 +103,10 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           bot.reply(message, res);
         }
       })
+    } else if (action === 'input.unknown') {
+      cleverbot.write(message.text, function(cleverResponse) {
+        bot.reply(message, cleverResponse.output);
+      });
     } else {
       bot.reply(message, fulfillment.speech);
     }
