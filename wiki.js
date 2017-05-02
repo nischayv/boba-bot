@@ -12,7 +12,8 @@ function ask(text, cb) {
     }
     const $ = cheerio.load(html);
     const basic = $('#mw-content-text').find('p').first().text();
-    return cb(null, basic);
+    const response = `${basic} For more information go to ${mainUrl}`;
+    return cb(null, response);
   });
 }
 
