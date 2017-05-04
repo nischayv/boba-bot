@@ -1,13 +1,19 @@
+const os = require('os')
+
 const Botkit = require('botkit')
 const Cleverbot = require('cleverbot-node')
-const os = require('os')
+const superagent = require('superagent')
 const apiai = require('apiai')
+
 const wiki = require('./wiki')
 const timeUtil = require('./utils/timeUtil')
+const locationUtil = require('./utils/localtionUtil')
 
 const slackToken = process.env.SLACK_TOKEN;
 const apiaiToken = process.env.APIAI_TOKEN;
 const cleverbotToken = process.env.CLEVER_TOKEN;
+const googlePlacesApiKey = process.env.GOOGLE_PLACES_API_KEY;
+const googleGeocodingApiKey = process.env.GOOGLE_GEOCODING_API_KEY;
 
 if (!slackToken || !apiaiToken || !cleverbotToken) {
   process.exit(1);
@@ -88,8 +94,8 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
   });
 
   request.on('response', (response) => {
-    bot.botkit.log(JSON.stringify(response));
     const { result: { action, fulfillment, parameters } } = response;
+    bot.botkit.log(JSON.stringify(parameters));
     if (action === 'wiki') {
       wiki.ask(parameters.any, (err, res) => {
         if (err || res.includes('Other reasons this message may be displayed:\n')) {
@@ -100,6 +106,39 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           bot.reply(message, res);
         }
       })
+    } else if (action === 'venue') {
+      let location = ''
+      let venueType = ''
+      if (!parameters.location) {
+        bot.reply(message, 'Please specify the location!');
+      } else {
+        location = typeof(parameters.location) === 'string' ? parameters.location : locationUtil.formatLocation(parameters.location);
+        bot.botkit.log(location);
+        superagent.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googleGeocodingApiKey}`, (err, res) => {
+          if (err) {
+            bot.botkit.log(err);
+            return bot.reply(message, 'Your location sucks');
+          }
+          bot.botkit.log(JSON.stringify(res.body));
+          const coordinates = res.body.results[0].geometry.location
+          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
+          bot.botkit.log(url);
+          superagent.get(url, (error, resp) => {
+            if (error) {
+              bot.botkit.log(error);
+              return bot.reply(message, `Couldn't find anything`);
+            }
+            bot.botkit.log(JSON.stringify(resp.body));
+            bot.reply(message, 'success')
+            resp.body.results.forEach((result) => {
+              bot.reply(message, result.name);
+            });
+            // for (let result in resp.body.results) {
+            //   bot.reply(message, result.name);
+            // }
+          });
+        });
+      }
     } else if (action === 'input.unknown') {
       cleverbot.write(message.text, function(cleverResponse) {
         bot.reply(message, cleverResponse.output);
