@@ -121,7 +121,7 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           }
           bot.botkit.log(JSON.stringify(res.body));
           const coordinates = res.body.results[0].geometry.location
-          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
+          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&rankby=distance&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
           bot.botkit.log(url);
           superagent.get(url, (error, resp) => {
             if (error) {
@@ -129,13 +129,9 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
               return bot.reply(message, `Couldn't find anything`);
             }
             bot.botkit.log(JSON.stringify(resp.body));
-            bot.reply(message, 'success')
             resp.body.results.forEach((result) => {
               bot.reply(message, result.name);
             });
-            // for (let result in resp.body.results) {
-            //   bot.reply(message, result.name);
-            // }
           });
         });
       }
