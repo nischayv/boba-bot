@@ -8,6 +8,7 @@ const apiai = require('apiai')
 const wiki = require('./wiki')
 const timeUtil = require('./utils/timeUtil')
 const locationUtil = require('./utils/localtionUtil')
+const placeUtil = require('./utils/placeUtil')
 
 const slackToken = process.env.SLACK_TOKEN;
 const apiaiToken = process.env.APIAI_TOKEN;
@@ -23,7 +24,8 @@ const cleverbot = new Cleverbot;
 cleverbot.configure({ botapi: cleverbotToken });
 const controller = Botkit.slackbot({
   debug: true,
-  stats_optout: true
+  stats_optout: true,
+  require_delivery: true
 });
 
 const bot = controller.spawn({
@@ -74,19 +76,17 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
   });
 });
 
-controller.hears(['uptime'],
-  'direct_message,direct_mention',
-  (bot, message) => {
-    bot.reply(message, {
-      type: 'typing'
-    })
-    const hostname = os.hostname();
-    const uptime = timeUtil.formatUptime(process.uptime());
+controller.hears(['uptime'], 'direct_message,direct_mention', (bot, message) => {
+  bot.reply(message, {
+    type: 'typing'
+  })
+  const hostname = os.hostname();
+  const uptime = timeUtil.formatUptime(process.uptime());
 
-    bot.replyWithTyping(message,
-      ':robot_face: I am a bot named <@' + bot.identity.name +
-      '>. I have been running for ' + uptime + ' on ' + hostname + '.');
-  });
+  bot.replyWithTyping(message,
+    ':robot_face: I am a bot named <@' + bot.identity.name +
+    '>. I have been running for ' + uptime + ' on ' + hostname + '.');
+});
 
 controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
   const request = ai.textRequest(message.text, {
@@ -121,17 +121,14 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           }
           bot.botkit.log(JSON.stringify(res.body));
           const coordinates = res.body.results[0].geometry.location
-          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&rankby=distance&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
-          bot.botkit.log(url);
+          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
           superagent.get(url, (error, resp) => {
             if (error) {
               bot.botkit.log(error);
               return bot.reply(message, `Couldn't find anything`);
             }
-            bot.botkit.log(JSON.stringify(resp.body));
-            resp.body.results.forEach((result) => {
-              bot.reply(message, result.name);
-            });
+            const place = placeUtil.filterPlace(resp.body.results);
+            bot.reply(message, `${place.name} ${place.img}`);
           });
         });
       }
