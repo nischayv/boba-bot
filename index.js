@@ -29,7 +29,8 @@ const controller = Botkit.slackbot({
 });
 
 const bot = controller.spawn({
-  token: slackToken
+  token: slackToken,
+  retry: true
 }).startRTM((err) => {
   if (err) {
     throw new Error('Could not connect to Slack');
