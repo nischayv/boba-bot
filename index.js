@@ -123,12 +123,23 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           const coordinates = res.body.results[0].geometry.location
           const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinates.lat},${coordinates.lng}&radius=1000&keyword=${parameters['venue-eating-out-type']}&key=${googlePlacesApiKey}`;
           superagent.get(url, (error, resp) => {
-            if (error) {
+            if (error || !resp.body.results.length) {
               bot.botkit.log(error);
               return bot.reply(message, `Couldn't find anything`);
             }
             const place = placeUtil.filterPlace(resp.body.results);
-            bot.reply(message, `${place.name} ${place.img}`);
+            if (place.img) {
+              bot.reply(message, {
+                attachments: [{
+                  fallback: place.name,
+                  color: '#36a64f',
+                  title: place.name,
+                  image_url: place.img
+                }]
+              })
+            } else {
+              return bot.reply(message, place.name);
+            }
           });
         });
       }

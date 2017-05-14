@@ -4,10 +4,6 @@ const superagent = require('superagent')
 const apiKey = process.env.PLACES_WEBSERVICE_KEY
 
 function filterPlace(places) {
-  let foundPlace = false;
-  do {
-
-  } while (foundPlace === false)
   let rand = Math.floor(Math.random() * places.length);
   let place = {
     name: places[rand].name
