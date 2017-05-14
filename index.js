@@ -101,24 +101,24 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
       wiki.ask(parameters.any, (err, res) => {
         if (err || res.includes('Other reasons this message may be displayed:\n')) {
           cleverbot.write(message.text, function(cleverResponse) {
-            bot.reply(message, cleverResponse.output);
+            bot.replyWithTyping(message, cleverResponse.output);
           });
         } else {
-          bot.reply(message, res);
+          bot.replyWithTyping(message, res);
         }
       })
     } else if (action === 'venue') {
       let location = ''
       let venueType = ''
       if (!parameters.location) {
-        bot.reply(message, 'Please specify the location!');
+        bot.replyWithTyping(message, 'Please specify the location!');
       } else {
         location = typeof(parameters.location) === 'string' ? parameters.location : locationUtil.formatLocation(parameters.location);
         bot.botkit.log(location);
         superagent.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googleGeocodingApiKey}`, (err, res) => {
           if (err) {
             bot.botkit.log(err);
-            return bot.reply(message, 'Your location sucks');
+            return bot.replyWithTyping(message, 'Your location sucks');
           }
           bot.botkit.log(JSON.stringify(res.body));
           const coordinates = res.body.results[0].geometry.location
@@ -126,7 +126,7 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
           superagent.get(url, (error, resp) => {
             if (error || !resp.body.results.length) {
               bot.botkit.log(error);
-              return bot.reply(message, `Couldn't find anything`);
+              return bot.replyWithTyping(message, `Couldn't find anything`);
             }
             const place = placeUtil.filterPlace(resp.body.results);
             if (place.img) {
@@ -139,17 +139,17 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
                 }]
               })
             } else {
-              return bot.reply(message, place.name);
+              return bot.replyWithTyping(message, place.name);
             }
           });
         });
       }
     } else if (action === 'input.unknown') {
       cleverbot.write(message.text, function(cleverResponse) {
-        bot.reply(message, cleverResponse.output);
+        bot.replyWithTyping(message, cleverResponse.output);
       });
     } else {
-      bot.reply(message, fulfillment.speech);
+      bot.replyWithTypiny(message, fulfillment.speech);
     }
   });
 
