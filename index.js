@@ -78,9 +78,6 @@ controller.hears(['shutdown'], 'direct_message,direct_mention', (bot, message) =
 });
 
 controller.hears(['uptime'], 'direct_message,direct_mention', (bot, message) => {
-  bot.reply(message, {
-    type: 'typing'
-  })
   const hostname = os.hostname();
   const uptime = timeUtil.formatUptime(process.uptime());
 
@@ -149,7 +146,7 @@ controller.hears(['.*'], 'direct_message,direct_mention', (bot, message) => {
         bot.reply(message, cleverResponse.output);
       });
     } else {
-      bot.replyWithTypiny(message, fulfillment.speech);
+      bot.reply(message, fulfillment.speech);
     }
   });
 
